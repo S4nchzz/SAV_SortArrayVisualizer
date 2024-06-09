@@ -2,6 +2,9 @@ package com.sav.savScene;
 
 import java.io.IOException;
 
+import com.sav.savScene.sortAlgorithms.BubbleSort;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.NodeOrientation;
@@ -11,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+
 
 public class Sav {
     @FXML
@@ -36,8 +40,13 @@ public class Sav {
             } catch (IOException e) {}
             
         this.arr = arr;
+
         this.fxid_hbox.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
         generatePanes(arr);
+        Platform.runLater(() -> {
+            BubbleSort bsort = new BubbleSort(arr, this);
+            bsort.sort();
+        });
         
     }
 
@@ -49,11 +58,25 @@ public class Sav {
             pane.setStyle("-fx-background-color: white");
             pane.setPrefHeight(arr[i]);
             pane.setMaxHeight(Region.USE_PREF_SIZE);
-            
+
             double pilarWidth = amountOfPilars > this.fxid_hbox.getPrefWidth() ? amountOfPilars / this.fxid_hbox.getPrefWidth() : this.fxid_hbox.getPrefWidth() / amountOfPilars;
             pane.setPrefWidth(pilarWidth);
             pane.setLayoutY(pilarWidth);
             fxid_hbox.getChildren().add(pane);
         }
+    }
+
+    public void movePane(int paneA, int paneB) {
+        Pane nodeB = (Pane)this.fxid_hbox.getChildren().get(paneB);
+        double heigthB = nodeB.getPrefHeight();
+
+        Pane nodeA = (Pane)this.fxid_hbox.getChildren().get(paneA);
+        double heigthA = nodeA.getPrefHeight();
+
+        nodeB.setPrefHeight(heigthA);
+        this.fxid_hbox.getChildren().set(paneB, nodeB);
+
+        nodeA.setPrefHeight(heigthB);
+        this.fxid_hbox.getChildren().set(paneA, nodeA);
     }
 }
